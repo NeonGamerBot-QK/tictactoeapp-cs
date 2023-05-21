@@ -1,6 +1,33 @@
 ﻿using System;
 using System.IO;
-
+class Colors {
+   public static string red(string str) {
+        return $"{FgRed}{str}{Reset}";
+    }
+ public static string   Reset = "\x1b[0m";
+public static string Bright = "\x1b[1m";
+public static string Dim = "\x1b[2m";
+public static string Underscore = "\x1b[4m";
+public static string Blink = "\x1b[5m";
+public static string Reverse = "\x1b[7m";
+public static string Hidden = "\x1b[8m";
+public static string FgBlack = "\x1b[30m";
+public  static string FgRed = "\x1b[31m";
+public static string FgGreen = "\x1b[32m";
+public static string FgYellow = "\x1b[33m";
+public static string FgBlue = "\x1b[34m";
+public static string FgMagenta = "\x1b[35m";
+public static string FgCyan = "\x1b[36m";
+public static string FgWhite = "\x1b[37m";
+public static string BgBlack = "\x1b[40m";
+public static string BgRed = "\x1b[41m";
+public static string BgGreen = "\x1b[42m";
+public static string BgYellow = "\x1b[43m";
+public static string BgBlue = "\x1b[44m";
+public static string BgMagenta = "\x1b[45m";
+public static string BgCyan = "\x1b[46m";
+public static string BgWhite = "\x1b[47m";
+}
 class Debugger {
 public Boolean  initalised = false;
 public Boolean created = false;
@@ -42,6 +69,7 @@ private void SaveFile() {
     static int player = 1;
     static Debugger debug = new Debugger();
     static int gameOver = 0;
+    static int[] winnerSlots = {};
     static DateTime startTime = default!;
     public static void Main() {    
 if(debug.initalised) {
@@ -71,7 +99,9 @@ if(gameOver != 0) {
    Board();
    Console.WriteLine(
     $@"
-    Player {gameOver} wins!
+{Colors.BgGreen+ "                                                      " +Colors.Reset}
+                  {Colors.FgGreen} Player {gameOver} wins! {Colors.Reset}
+{Colors.BgGreen+ "                                                      " +Colors.Reset}
     ");
     System.Environment.Exit(0);
     return;
@@ -85,27 +115,31 @@ Main();
 }
     private static void Board() {
     debug.log("void board#()");
-    Console.WriteLine($"It is player {player}'s turn - Logs in {debug.pathname}");
+    Console.WriteLine(Colors.red($"It is player {player}'s turn - Logs in {debug.pathname}"));
       List<string> lines  = new List<string>() {};
      int[] nums = {0,3,6};
      foreach(int i in nums) {
       //  Console.Write(i);
       string str = "";
         // Console.Write(lines);
-        // Console.Write(j);        
-        str += $"{slots[i]} | ";
-        str += $"{slots[i+1]} | ";
-        str += $"{slots[i+2]}";
+        // Console.Write(j);     
+       string slot1= slots[i] == "X" ? Colors.FgBlack + "X" + Colors.Reset : slots[i] == "O" ? Colors.FgWhite + "O"+Colors.Reset : Colors.Dim + slots[i] + Colors.Reset; 
+       string slot2=  slots[i+1] == "X" ? Colors.FgBlack + "X" + Colors.Reset : slots[i+1] == "O" ? Colors.FgWhite + "O"+Colors.Reset : Colors.Dim + slots[i+1] + Colors.Reset;
+       string slot3=  slots[i+2] == "X" ? Colors.FgBlack + "X" + Colors.Reset : slots[i+2] == "O" ? Colors.FgWhite + "O"+Colors.Reset : Colors.Dim + slots[i+2] + Colors.Reset;
+        string bar = Colors.Dim + " | " + Colors.Reset;
+        str +=   $"{slot1}{bar} " + Colors.Reset;
+        str +=   $"{slot2}{bar} " +Colors.Reset;
+        str +=  $"{slot3}" +Colors.Reset;
         lines.Add(str);
      }
-        Console.WriteLine(string.Join("\n---------\n", lines));
+        Console.WriteLine(string.Join(Colors.Dim + "\n---------\n"+Colors.Reset, lines));
     }
     private static void Play() {
     debug.log("void Play#()");
-        Console.Write("Choose a place to play: ");
+        Console.Write(Colors.Dim + "Choose a place to play: "+Colors.Reset);
 int key = Convert.ToInt32(Console.ReadLine());
 if(!(key.ToString() == slots[key])) {
-Console.WriteLine("Please enter a valid slot to play");
+Console.WriteLine(Colors.red("Please enter a valid slot to play"));
 Play();
 return;
 }
@@ -128,54 +162,48 @@ if(isOcupied(slots[0]) && isOcupied(slots[1]) && isOcupied(slots[2])) {
 string piece = $"{string.Join("", slots, 0, 3)}"; // all pieces
 Boolean isX = piece == "XXX";
 Boolean isO = piece == "OOO";
-return isX ? 1 : isO ? 2 : 0;
-} else if(isOcupied(slots[3]) && isOcupied(slots[4]) && isOcupied(slots[5])) {
+if(isX || isO) return isX ? 1 :isO ? 2 :  -1;
+} 
+ if(isOcupied(slots[3]) && isOcupied(slots[4]) && isOcupied(slots[5])) {
 string piece = $"{ string.Join("", slots, 3, 3)}"; // all pieces
 debug.log($"Checking piece {piece} on 3-4");
 Boolean isX = piece == "XXX";
 Boolean isO = piece == "OOO";
-return isX ? 1 : isO ? 2 : 0;
-}  else if(isOcupied(slots[6]) && isOcupied(slots[7]) && isOcupied(slots[8])) {
+if(isX || isO) return isX ? 1 :isO ? 2 :  -1;
+}   if(isOcupied(slots[6]) && isOcupied(slots[7]) && isOcupied(slots[8])) {
 string piece = $"{ string.Join("", slots, 6, 3)}"; // all pieces
 debug.log($"Checking piece {piece} on 6-3");
 Boolean isX = piece == "XXX";
 Boolean isO = piece == "OOO";
-return isX ? 1 : isO ? 2 : 0;
+if(isX || isO) return isX ? 1 :isO ? 2 :  -1;
 }
-else if(isOcupied(slots[0]) && isOcupied(slots[3]) && isOcupied(slots[6])) {
+ if(isOcupied(slots[0]) && isOcupied(slots[3]) && isOcupied(slots[6])) {
 string piece = slots[0]+slots[3]+slots[6]; // all pieces
 debug.log($"Checking piece {piece} on 0-3-6");
 Boolean isX = piece == "XXX";
 Boolean isO = piece == "OOO";
-return isX ? 1 : isO ? 2 : 0;
-} else if(isOcupied(slots[1]) && isOcupied(slots[4]) && isOcupied(slots[7])) {
+if(isX || isO) return isX ? 1 :isO ? 2 :  -1;
+}  if(isOcupied(slots[1]) && isOcupied(slots[4]) && isOcupied(slots[7])) {
 string piece = slots[1]+slots[4]+slots[7]; // all pieces
 debug.log($"Checking piece {piece} on 1-4-7");
 Boolean isX = piece == "XXX";
 Boolean isO = piece == "OOO";
-return isX ? 1 : isO ? 2 : 0;
-} else if(isOcupied(slots[2]) && isOcupied(slots[5]) && isOcupied(slots[8])) {
-string piece = slots[2]+slots[5]+slots[8]; // all pieces
-debug.log($"Checking piece {piece} on 2-5-8");
+if(isX || isO) return isX ? 1 :isO ? 2 :  -1;
+} if(isOcupied(slots[2]) && isOcupied(slots[4]) && isOcupied(slots[6])) {
+string piece = slots[2]+slots[4]+slots[6]; // all pieces
+debug.log($"Checking piece {piece} on 2-4-6");
 Boolean isX = piece == "XXX";
 Boolean isO = piece == "OOO";
-return isX ? 1 : isO ? 2 : 0;
-} else if(isOcupied(slots[2]) && isOcupied(slots[5]) && isOcupied(slots[8])) {
+if(isX || isO) return isX ? 1 :isO ? 2 :  -1;
+}  if(isOcupied(slots[0]) && isOcupied(slots[4]) && isOcupied(slots[8])) {
 string piece = slots[0]+slots[4]+slots[8]; // all pieces
-debug.log($"Checking piece {piece} on 2-5-8");
+debug.log($"Checking piece {piece} on 0-4-8");
 Boolean isX = piece == "XXX";
 Boolean isO = piece == "OOO";
-return isX ? 1 : isO ? 2 : 0;
-} else if(isOcupied(slots[2]) && isOcupied(slots[5]) && isOcupied(slots[8])) {
-string piece = slots[2]+slots[5]+slots[6]; // all pieces
-debug.log($"Checking piece {piece} on 2-5-8");
-Boolean isX = piece == "XXX";
-Boolean isO = piece == "OOO";
-return isX ? 1 : isO ? 2 : 0;
+if(isX || isO) return isX ? 1 :isO ? 2 :  -1;
 }
-else {
     return 0;
-}
+
 
     }
 }
